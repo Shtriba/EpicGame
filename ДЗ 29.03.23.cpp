@@ -1,4 +1,4 @@
-﻿#include <iostream>
+﻿#include  <iostream> 
 #include <stdlib.h>
 #include <ctime>
 
@@ -27,13 +27,14 @@ public:
     void random() {
         srand(time(0));
         hp_gg = 50 + rand() % (100 - 50);
-        damage_gg = 3 + rand() % (7 - 3);
-        armor_gg = 1 + rand() % (2 - 1);
+        damage_gg = 4 + rand() % (7 - 3);
+        armor_gg = 2 + rand() % (2 - 1);
         stamina_gg = 30 + rand() % (40 - 30);
     }
-
+    int reputation_gg_P = 50;
+    int reputation_gg_L = -50;
     void getReputation() {
-        cout << "Данные вашего персонажа:" << endl << "Здоровье: " << hp_gg << endl << "Урон: " << damage_gg << endl << "Броня: " << armor_gg << endl << "Выносливость: " << stamina_gg << endl;
+        cout << "Данные вашего персонажа:" << endl << "Здоровье: " << hp_gg << endl << "Урон: " << damage_gg << endl << "Броня: " << armor_gg << endl << "Выносливость: " << stamina_gg << endl << "Репутация среди Племени: " << reputation_gg_P << endl << "Репутация среди Линкольна: " << reputation_gg_L << endl;
         cout << "" << endl;
     }
     int hp_gg, damage_gg, armor_gg, stamina_gg;
@@ -45,12 +46,20 @@ public:
     bool relationships = 0;
     int reputation_gg_P = 50;
     int reputation_gg_L = -50;
-    
-    void dialog(int type) {
+
+    int getRepL() {
+        return reputation_gg_L;
+    }
+
+    int getRepP() {
+        return reputation_gg_P;
+    }
+
+    bool dialog(int type) {
 
     dialog:
 
-        cout <<endl<< "1 - 'Как жизнь, боец?'" << endl << "2 - Атаковать" << endl << "3 - 'Бывай' (уйти)" << endl<<endl;;
+        cout << endl << "1 - 'Как жизнь, боец?'" << endl << "2 - Атаковать" << endl << "3 - 'Бывай' (уйти)" << endl << endl;;
         char b;
         cin >> b;
         if (b == '1') {
@@ -61,27 +70,25 @@ public:
         else if (b == '2') {
             cout << endl << "- Ах ты ж сволочь! Пошел вон отсюда! Еще раз увижу - зарежу к чертовой матери!" << endl;
 
-            if (type ==4 || type == 5 || type == 6) {
+            if (type <= 6) {
                 reputation_gg_P -= 51;
                 cout << "Ваша репутация среди племени упала" << endl;
             }
             else {
                 reputation_gg_L -= 51;
                 cout << "Ваша репутация среди линкольна упала" << endl;
+                
+
             }
             relationships = 1;
-            
-
         }
         else if (b == '3') {
             cout << endl << "–Удачи!" << endl; relationships = 0;
         }
         else { cout << endl << "Пожалуйста, выберите вариант ответа:" << endl; goto dialog; }
-
-
-
+return relationships;
     }
-
+    
 };
 
 
@@ -175,83 +182,64 @@ public:
         bool Q;
 
     battleStart:
+        cin >> c;
 
-        if (stamina <= 0) {
-            cout << "Враг выдохся и останавливается чтобы передохнуть. Идеальная возможность атаковать его!" << endl;
-            stamina = staminaMax;
-        }
-        else {
-            cout << "Враг атакует!" << endl << "Ваши действия?" << endl << "1 - Поставить блок" << endl << "2 - Попытаться уклониться" << endl;
-            cin >> c;
+        if (c == 1) {
+            srand(time(0));
+            v = rand() % 3;
+            damageCaused = (damage - (gg_armor / 2)) * (v / 2);
+            gg_hp -= damageCaused;
+            if (v == 0) {
 
-
-            if (c == 1) {
-                srand(time(0));
-                v = rand() % 3;
-                damageCaused = (damage - gg_armor) * (v / 2);
-                gg_hp -= damageCaused;
-
-                if (v == 0) {
-
-                    cout << "Идеальное парирование! Персонаж не потерял здоровье" << endl;
-                }
-                else if (v == 1) {
-                    cout << "Вы успели поставить блок. Персонаж теряет " << damageCaused << " здоровья" << endl;
-                }
-                else if (v == 2) {
-                    cout << "Вы попытались поставить блок, но враг оказался быстрее. Персонаж теряет " << damageCaused << " здоровья" << endl;
-                }
+                cout << "Идеальное парирование! Персонаж не потерял здоровье" << endl;
             }
-
-
-            else if (c == 2) {
-                srand(time(0));
-                v = rand() % 3;
-                damageCaused = (damage - gg_armor) * (v / 2);
-                gg_hp -= damageCaused;
-
-                if (v == 0) {
-
-                    cout << "Идеальное уклонение! Персонаж не потерял здоровье" << endl;
-                }
-                else if (v == 1) {
-                    cout << "Вы успели отпрыгнуть, но вас все же зацепило. Персонаж теряет " << damageCaused << " здоровья" << endl;
-                }
-                else if (v == 2) {
-                    cout << "Вы попытались отпрыгнуть в сторону, но удар все же вас настиг. Персонаж теряет " << damageCaused << " здоровья" << endl;
-                }
-
-                gg_stamina -= 5;
-                stamina -= 10;
+            if (v == 1) {
+                cout << "Вы успели поставить блок,. Персонаж теряет " << damageCaused << " здоровья" << endl;
             }
-            cout << "У Вас осталось " << gg_hp << " здоровья" << endl;
+            if (v == 2) {
+                cout << "Вы попытались поставить блок, но враг оказался быстрее. Персонаж теряет " << damageCaused << " здоровья" << endl;
+            }
         }
+
+
+        else if (c == 2) {
+            srand(time(0));
+            v = rand() % 3;
+            damageCaused = (damage - gg_armor) * (v / 2);
+            gg_hp -= damageCaused;
+            if (v == 0) {
+
+                cout << "Идеальное уклонение! Персонаж не потерял здоровье" << endl;
+            }
+            else if (v == 1) {
+                cout << "Вы успели отпрыгнуть, но вас все же зацепило. Персонаж теряет " << damageCaused << " здоровья" << endl;
+            }
+            else if (v == 2) {
+                cout << "Вы попытались отпрыгнуть в сторону, но удар все же вас настиг. Персонаж теряет " << damageCaused << " здоровья" << endl;
+            }
+        }
+
+        cout << "У Вас осталось " << gg_hp << " здоровья" << endl;
+
         if (gg_hp <= 0) {
             Q = 0;
             goto battleEnd;
         }
-        if (gg_stamina <= 0) {
-            cout << "Вы тяжело дышите, совсем нет сил атаковать..." << endl << "Вы делаете передышку. Выносливость восстановлена" << endl;
-            gg_stamina = gg_staminaMax;
-        }
-        else {
-            cout << "Вы контратакуете врага..." << endl;
-            v = rand() % 2 + 1;
-            damageCaused = (gg_dmg - armor) * v;
-            hp -= damageCaused;
-            if (v == 1) {
 
-                cout << "Ваш клинок настигает цель. Враг теряет " << damageCaused << " здоровья" << endl;
-            }
-            else if (v == 2) {
-                cout << "Ваш удар настиг врага врасплох, вы нанесли значительный урон! Враг теряет " << damageCaused << " здоровья" << endl;
-            }
-              
-            stamina -= 5;
-            gg_stamina -= 10;
+        cout << "Вы контратакуете врага..." << endl;
+        v = rand() % 2 + 1;
+        damageCaused = (gg_dmg - (armor / 2)) * v;
+        hp -= damageCaused;
+        if (v == 1) {
 
-            cout << "У врага осталось " << hp << " здоровья" << endl;
+            cout << "Ваш клинок настигает цель. Враг теряет " << damageCaused << " здоровья" << endl;
         }
+        else if (v == 2) {
+            cout << "Ваш удар настиг врага врасплох, вы нанесли значительный урон! Враг теряет " << damageCaused << " здоровья" << endl;
+        }
+
+        cout << "У врага осталось " << hp << " здоровья" << endl;
+
         if (hp <= 0) {
             Q = 1;
             goto battleEnd;
@@ -286,83 +274,63 @@ public:
         bool Q;
 
     battleStart:
+        cin >> c;
+        if (c == 1) {
+            srand(time(0));
+            v = rand() % 3;
+            damageCaused = (damage - (gg_armor / 2)) * (v / 2);
+            gg_hp -= damageCaused;
+            if (v == 0) {
 
-        if (stamina <= 0) {
-            cout << "Враг выдохся и останавливается чтобы передохнуть. Идеальная возможность атаковать его!" << endl;
-            stamina = staminaMax;
-        }
-        else {
-            cout << "Враг атакует!" << endl << "Ваши действия?" << endl << "1 - Поставить блок" << endl << "2 - Попытаться уклониться" << endl;
-            cin >> c;
-
-
-            if (c == 1) {
-                srand(time(0));
-                v = rand() % 3;
-                damageCaused = (damage - gg_armor) * (v / 2);
-                gg_hp -= damageCaused;
-
-                if (v == 0) {
-
-                    cout << "Идеальное парирование! Персонаж не потерял здоровье" << endl;
-                }
-                else if (v == 1) {
-                    cout << "Вы успели поставить блок. Персонаж теряет " << damageCaused << " здоровья" << endl;
-                }
-                else if (v == 2) {
-                    cout << "Вы попытались поставить блок, но враг оказался быстрее. Персонаж теряет " << damageCaused << " здоровья" << endl;
-                }
+                cout << "Идеальное парирование! Персонаж не потерял здоровье" << endl;
             }
-
-
-            else if (c == 2) {
-                srand(time(0));
-                v = rand() % 3;
-                damageCaused = (damage - gg_armor) * (v / 2);
-                gg_hp -= damageCaused;
-
-                if (v == 0) {
-
-                    cout << "Идеальное уклонение! Персонаж не потерял здоровье" << endl;
-                }
-                else if (v == 1) {
-                    cout << "Вы успели отпрыгнуть, но вас все же зацепило. Персонаж теряет " << damageCaused << " здоровья" << endl;
-                }
-                else if (v == 2) {
-                    cout << "Вы попытались отпрыгнуть в сторону, но удар все же вас настиг. Персонаж теряет " << damageCaused << " здоровья" << endl;
-                }
-
-                gg_stamina -= 5;
-                stamina -= 10;
+            if (v == 1) {
+                cout << "Вы успели поставить блок,. Персонаж теряет " << damageCaused << " здоровья" << endl;
             }
-            cout << "У Вас осталось " << gg_hp << " здоровья" << endl;
+            if (v == 2) {
+                cout << "Вы попытались поставить блок, но враг оказался быстрее. Персонаж теряет " << damageCaused << " здоровья" << endl;
+            }
         }
+
+
+        else if (c == 2) {
+            srand(time(0));
+            v = rand() % 3;
+            damageCaused = (damage - gg_armor) * (v / 2);
+            gg_hp -= damageCaused;
+            if (v == 0) {
+
+                cout << "Идеальное уклонение! Персонаж не потерял здоровье" << endl;
+            }
+            else if (v == 1) {
+                cout << "Вы успели отпрыгнуть, но вас все же зацепило. Персонаж теряет " << damageCaused << " здоровья" << endl;
+            }
+            else if (v == 2) {
+                cout << "Вы попытались отпрыгнуть в сторону, но удар все же вас настиг. Персонаж теряет " << damageCaused << " здоровья" << endl;
+            }
+        }
+
+        cout << "У Вас осталось " << gg_hp << " здоровья" << endl;
+
         if (gg_hp <= 0) {
             Q = 0;
             goto battleEnd;
         }
-        if (gg_stamina <= 0) {
-            cout << "Вы тяжело дышите, совсем нет сил атаковать..." << endl << "Вы делаете передышку. Выносливость восстановлена" << endl;
-            gg_stamina = gg_staminaMax;
+
+        cout << "Вы контратакуете врага..." << endl;
+        v = rand() % 2 + 1;
+        damageCaused = (gg_dmg - (armor / 2)) * v;
+        hp -= damageCaused;
+        if (v == 1) {
+
+            cout << "Ваш клинок настигает цель. Враг теряет " << damageCaused << " здоровья" << endl;
         }
-        else {
-            cout << "Вы контратакуете врага..." << endl;
-            v = rand() % 2 + 1;
-            damageCaused = (gg_dmg - armor) * v;
-            hp -= damageCaused;
-            if (v == 1) {
-
-                cout << "Ваш клинок настигает цель. Враг теряет " << damageCaused << " здоровья" << endl;
-            }
-            else if (v == 2) {
-                cout << "Ваш удар настиг врага врасплох, вы нанесли значительный урон! Враг теряет " << damageCaused << " здоровья" << endl;
-            }
-
-            stamina -= 5;
-            gg_stamina -= 10;
-
-            cout << "У врага осталось " << hp << " здоровья" << endl;
+        else if (v == 2) {
+            cout << "Ваш удар настиг врага врасплох, вы нанесли значительный урон! Враг теряет " << damageCaused << " здоровья" << endl;
         }
+
+        cout << "У врага осталось " << hp << " здоровья" << endl;
+
         if (hp <= 0) {
             Q = 1;
             goto battleEnd;
@@ -383,8 +351,8 @@ class Soldier_3 : public Lincoln {
 public:
 
     int hp = 100 + rand() % (150 - 100);
-    int damage = 10 + rand() % (16 - 10);
-    int armor = 18 + rand() % (30 - 18);
+    int damage = 10 + rand() % (6 - 3);
+    int armor = 8 + rand() % (3 - 1);
     int stamina = 85 + rand() % (140 - 85);
 
     void interctable() {
@@ -397,83 +365,64 @@ public:
         bool Q;
 
     battleStart:
+        cin >> c;
 
-        if (stamina <= 0) {
-            cout << "Враг выдохся и останавливается чтобы передохнуть. Идеальная возможность атаковать его!" << endl;
-            stamina = staminaMax;
-        }
-        else {
-            cout << "Враг атакует!" << endl << "Ваши действия?" << endl << "1 - Поставить блок" << endl << "2 - Попытаться уклониться" << endl;
-            cin >> c;
+        if (c == 1) {
+            srand(time(0));
+            v = rand() % 3;
+            damageCaused = (damage - (gg_armor / 2)) * (v / 2);
+            gg_hp -= damageCaused;
+            if (v == 0) {
 
-
-            if (c == 1) {
-                srand(time(0));
-                v = rand() % 3;
-                damageCaused = (damage - gg_armor) * (v / 2);
-                gg_hp -= damageCaused;
-
-                if (v == 0) {
-
-                    cout << "Идеальное парирование! Персонаж не потерял здоровье" << endl;
-                }
-                else if (v == 1) {
-                    cout << "Вы успели поставить блок. Персонаж теряет " << damageCaused << " здоровья" << endl;
-                }
-                else if (v == 2) {
-                    cout << "Вы попытались поставить блок, но враг оказался быстрее. Персонаж теряет " << damageCaused << " здоровья" << endl;
-                }
+                cout << "Идеальное парирование! Персонаж не потерял здоровье" << endl;
             }
-
-
-            else if (c == 2) {
-                srand(time(0));
-                v = rand() % 3;
-                damageCaused = (damage - gg_armor) * (v / 2);
-                gg_hp -= damageCaused;
-
-                if (v == 0) {
-
-                    cout << "Идеальное уклонение! Персонаж не потерял здоровье" << endl;
-                }
-                else if (v == 1) {
-                    cout << "Вы успели отпрыгнуть, но вас все же зацепило. Персонаж теряет " << damageCaused << " здоровья" << endl;
-                }
-                else if (v == 2) {
-                    cout << "Вы попытались отпрыгнуть в сторону, но удар все же вас настиг. Персонаж теряет " << damageCaused << " здоровья" << endl;
-                }
-
-                gg_stamina -= 5;
-                stamina -= 10;
+            if (v == 1) {
+                cout << "Вы успели поставить блок,. Персонаж теряет " << damageCaused << " здоровья" << endl;
             }
-            cout << "У Вас осталось " << gg_hp << " здоровья" << endl;
+            if (v == 2) {
+                cout << "Вы попытались поставить блок, но враг оказался быстрее. Персонаж теряет " << damageCaused << " здоровья" << endl;
+            }
         }
+
+
+        else if (c == 2) {
+            srand(time(0));
+            v = rand() % 3;
+            damageCaused = (damage - gg_armor) * (v / 2);
+            gg_hp -= damageCaused;
+            if (v == 0) {
+
+                cout << "Идеальное уклонение! Персонаж не потерял здоровье" << endl;
+            }
+            else if (v == 1) {
+                cout << "Вы успели отпрыгнуть, но вас все же зацепило. Персонаж теряет " << damageCaused << " здоровья" << endl;
+            }
+            else if (v == 2) {
+                cout << "Вы попытались отпрыгнуть в сторону, но удар все же вас настиг. Персонаж теряет " << damageCaused << " здоровья" << endl;
+            }
+        }
+
+        cout << "У Вас осталось " << gg_hp << " здоровья" << endl;
+
         if (gg_hp <= 0) {
             Q = 0;
             goto battleEnd;
         }
-        if (gg_stamina <= 0) {
-            cout << "Вы тяжело дышите, совсем нет сил атаковать..." << endl << "Вы делаете передышку. Выносливость восстановлена" << endl;
-            gg_stamina = gg_staminaMax;
+
+        cout << "Вы контратакуете врага..." << endl;
+        v = rand() % 2 + 1;
+        damageCaused = (gg_dmg - (armor / 2)) * v;
+        hp -= damageCaused;
+        if (v == 1) {
+
+            cout << "Ваш клинок настигает цель. Враг теряет " << damageCaused << " здоровья" << endl;
         }
-        else {
-            cout << "Вы контратакуете врага..." << endl;
-            v = rand() % 2 + 1;
-            damageCaused = -((gg_dmg - armor) * v);
-            hp -= damageCaused;
-            if (v == 1) {
-
-                cout << "Ваш клинок настигает цель. Враг теряет " << damageCaused << " здоровья" << endl;
-            }
-            else if (v == 2) {
-                cout << "Ваш удар настиг врага врасплох, вы нанесли значительный урон! Враг теряет " << damageCaused << " здоровья" << endl;
-            }
-
-            stamina -= 5;
-            gg_stamina -= 10;
-
-            cout << "У врага осталось " << hp << " здоровья" << endl;
+        else if (v == 2) {
+            cout << "Ваш удар настиг врага врасплох, вы нанесли значительный урон! Враг теряет " << damageCaused << " здоровья" << endl;
         }
+
+        cout << "У врага осталось " << hp << " здоровья" << endl;
+
         if (hp <= 0) {
             Q = 1;
             goto battleEnd;
@@ -497,13 +446,13 @@ public:
 
 class Warrior_I : public Plema {
 public:
-
+    int hp, damage, armor, stamina;
     void interctable() {
         srand(time(0));
-        int hp = 50 + rand() % (100 - 50);
-        int damage = 3 + rand() % (7 - 3);
-        int armor = 1 + rand() % (2 - 1);
-        int stamina = 30 + rand() % (40 - 30);
+        hp = 50 + rand() % (100 - 50);
+        damage = 3 + rand() % (7 - 3);
+        armor = 1 + rand() % (2 - 1);
+        stamina = 30 + rand() % (40 - 30);
         cout << "Данные вашего врага:" << endl << "Здоровье: " << hp << endl << "Урон: " << damage << endl << "Броня: " << armor << endl << "Выносливость: " << stamina << endl;
     }
     int fight(int gg_hp, int gg_dmg, int gg_armor, int gg_stamina) {
@@ -520,7 +469,7 @@ public:
         if (c == 1) {
             srand(time(0));
             v = rand() % 3;
-            damageCaused = (damage - gg_armor) * v;
+            damageCaused = (damage - (gg_armor / 2)) * (v / 2);
             gg_hp -= damageCaused;
             if (v == 0) {
 
@@ -538,7 +487,7 @@ public:
         else if (c == 2) {
             srand(time(0));
             v = rand() % 3;
-            damageCaused = (damage - gg_armor) * v;
+            damageCaused = (damage - gg_armor) * (v / 2);
             gg_hp -= damageCaused;
             if (v == 0) {
 
@@ -561,7 +510,7 @@ public:
 
         cout << "Вы контратакуете врага..." << endl;
         v = rand() % 2 + 1;
-        damageCaused = (gg_dmg - armor) * v;
+        damageCaused = (gg_dmg - (armor / 2)) * v;
         hp -= damageCaused;
         if (v == 1) {
 
@@ -591,13 +540,13 @@ public:
 
 class Warrior_II : public Plema {
 public:
-
+    int hp, damage, armor, stamina;
     void interctable() {
         srand(time(0));
-        int hp = 70 + rand() % (120 - 70);
-        int damage = 7 + rand() % (12 - 7);
-        int armor = 5 + rand() % (10 - 5);
-        int stamina = 40 + rand() % (75 - 40);
+        hp = 70 + rand() % (120 - 70);
+        damage = 7 + rand() % (12 - 7);
+        armor = 2 + rand() % (5 - 1);
+        stamina = 40 + rand() % (75 - 40);
         cout << "Данные вашего врага:" << endl << "Здоровье: " << hp << endl << "Урон: " << damage << endl << "Броня: " << armor << endl << "Выносливость: " << stamina << endl;
     }
     int fight(int gg_hp, int gg_dmg, int gg_armor, int gg_stamina) {
@@ -614,7 +563,7 @@ public:
         if (c == 1) {
             srand(time(0));
             v = rand() % 3;
-            damageCaused = (damage - gg_armor) * v;
+            damageCaused = (damage - (gg_armor / 2)) * (v / 2);
             gg_hp -= damageCaused;
             if (v == 0) {
 
@@ -632,7 +581,7 @@ public:
         else if (c == 2) {
             srand(time(0));
             v = rand() % 3;
-            damageCaused = (damage - gg_armor) * v;
+            damageCaused = (damage - gg_armor) * (v / 2);
             gg_hp -= damageCaused;
             if (v == 0) {
 
@@ -655,7 +604,7 @@ public:
 
         cout << "Вы контратакуете врага..." << endl;
         v = rand() % 2 + 1;
-        damageCaused = (gg_dmg - armor) * v;
+        damageCaused = (gg_dmg - (armor / 2)) * v;
         hp -= damageCaused;
         if (v == 1) {
 
@@ -685,14 +634,14 @@ public:
 
 class Warrior_III : public Plema {
 public:
-
+    int hp, damage, armor, stamina;
 
     void interctable() {
         srand(time(0));
-        int hp = 100 + rand() % (150 - 100);
-        int damage = 12 + rand() % (20 - 12);
-        int armor = 25 + rand() % (60 - 25);
-        int stamina = 70 + rand() % (110 - 70);
+        hp = 100 + rand() % (150 - 100);
+        damage = 12 + rand() % (20 - 12);
+        armor = 5 + rand() % (5 - 3);
+        stamina = 70 + rand() % (110 - 70);
         cout << "Данные вашего врага:" << endl << "Здоровье: " << hp << endl << "Урон: " << damage << endl << "Броня: " << armor << endl << "Выносливость: " << stamina << endl;
     }
     int fight(int gg_hp, int gg_dmg, int gg_armor, int gg_stamina) {
@@ -709,7 +658,7 @@ public:
         if (c == 1) {
             srand(time(0));
             v = rand() % 3;
-            damageCaused = (damage - gg_armor) * v;
+            damageCaused = (damage - (gg_armor / 2)) * (v / 2);
             gg_hp -= damageCaused;
             if (v == 0) {
 
@@ -727,7 +676,7 @@ public:
         else if (c == 2) {
             srand(time(0));
             v = rand() % 3;
-            damageCaused = (damage - gg_armor) * v;
+            damageCaused = (damage - gg_armor) * (v / 2);
             gg_hp -= damageCaused;
             if (v == 0) {
 
@@ -750,7 +699,7 @@ public:
 
         cout << "Вы контратакуете врага..." << endl;
         v = rand() % 2 + 1;
-        damageCaused = (gg_dmg - armor) * v;
+        damageCaused = (gg_dmg - (armor / 2)) * v;
         hp -= damageCaused;
         if (v == 1) {
 
@@ -804,6 +753,8 @@ restart:
     get.random();
     get.getReputation();
 
+    NPC K;
+
     hp_gg = get.hp_gg;
     damage_gg = get.damage_gg;
     armor_gg = get.armor_gg;
@@ -837,14 +788,16 @@ restart:
         "$ - позиции бойцов Племени" << endl <<
         "Не забывайте что враги нападут как только вы приблизитесь. Удачи, товарищ '" << endl << endl;
     /*sleep(2);*/
-    int death_npc1 = 0;
-    int death_npc2 = 0;
-    int death_npc3 = 0;
-    int death_npc4 = 0;
-    int death_npc5 = 0;
-    int death_npc6 = 0;
+    bool death_npc1 = 0;
+    bool death_npc2 = 0;
+    bool death_npc3 = 0;
+    bool death_npc4 = 0;
+    bool death_npc5 = 0;
+    bool death_npc6 = 0;
 loop1:
     int i = 0;
+    reputation_gg_L = K.getRepL();
+    reputation_gg_P = K.getRepP();
     cout << "Ваши действия?" << endl;
     cin >> move_gg;
     i = 1;
@@ -876,7 +829,7 @@ loop1:
     }
     else if (move_gg == '0') { goto menu; }
 
-battle:
+
     if (((x == 0 && y == 40) || (x == 0 && y == 80) || (x == -20 && y == 60) || (x == 20 && y == 60)) && (death_npc1 == 0)) {
         type = 1;
         if (reputation_gg_L < 0 || relationshipL1 == 1) {
@@ -890,7 +843,6 @@ battle:
             b.interctable();
             BattleRes = b.fight(hp_gg, damage_gg, armor_gg, stamina_gg);
 
-            death_npc1 = 1;
         }
         else {
 
@@ -899,7 +851,7 @@ battle:
             c.say();
 
             NPC d;
-            d.dialog(type);
+            relationships = d.dialog(type);
 
             if (relationships == 1) {
                 relationshipL1 = 1;
@@ -922,7 +874,7 @@ battle:
             Soldier_2 b;
             b.interctable();
             BattleRes = b.fight(hp_gg, damage_gg, armor_gg, stamina_gg);
-            death_npc2 = 1;
+
         }
         else {
 
@@ -931,7 +883,7 @@ battle:
             c.say();
 
             NPC d;
-            d.dialog(type);
+            relationships = d.dialog(type);
             if (relationships == 1) {
                 relationshipL2 = 1;
                 relationships = 0;
@@ -954,7 +906,7 @@ battle:
 
             b.interctable();
             BattleRes = b.fight(hp_gg, damage_gg, armor_gg, stamina_gg);
-            death_npc3 = 1;
+
         }
         else {
 
@@ -963,7 +915,7 @@ battle:
             c.move();
 
             NPC d;
-            d.dialog(type);
+            relationships = d.dialog(type);
             if (relationships == 1) {
                 relationshipL3 = 1;
                 relationships = 0;
@@ -985,7 +937,6 @@ battle:
             Warrior_I b;
             b.interctable();
             BattleRes = b.fight(hp_gg, damage_gg, armor_gg, stamina_gg);
-            death_npc4 = 1;
         }
         else {
 
@@ -995,18 +946,18 @@ battle:
             c.say();
 
             NPC d;
-            d.dialog(type);
+            relationships = d.dialog(type);
             if (relationships == 1) {
                 relationshipP1 = 1;
                 relationships = 0;
             }
-            
+
 
             goto loop1;
         }
 
     }
-    else if (((x == 60 && y == 0) || (x == 60 && y == -40) || (x == -40 && y == -20) || (x == -80 && y == -20)) && (death_npc5 == 0)) {
+    else if (((x == -80 && y == -20) || (x == -40 && y == -20) || (x == -60 && y == -40) || (x == -60 && y == 0)) && (death_npc5 == 0)) {
         type = 5;
         if (reputation_gg_P < 0 || relationshipP2 == 1) {
 
@@ -1018,7 +969,6 @@ battle:
             Warrior_II b;
             b.interctable();
             BattleRes = b.fight(hp_gg, damage_gg, armor_gg, stamina_gg);
-            death_npc1 = 5;
         }
         else {
 
@@ -1027,7 +977,7 @@ battle:
             c.say();
 
             NPC d;
-            d.dialog(type);
+            relationships = d.dialog(type);
 
             if (relationships == 1) {
                 relationshipP2 = 1;
@@ -1049,7 +999,6 @@ battle:
             Warrior_III b;
             b.interctable();
             BattleRes = b.fight(hp_gg, damage_gg, armor_gg, stamina_gg);
-            death_npc1 = 6;
 
         }
         else {
@@ -1058,7 +1007,7 @@ battle:
             c.say();
 
             NPC d;
-            d.dialog(type);
+            relationships = d.dialog(type);
             if (relationships == 1) {
                 relationshipP3 = 1;
                 relationships = 0;
@@ -1081,12 +1030,12 @@ battle:
     else {
         cout << "Враг повержен. Вы восстановили здоровье" << endl;
         switch (type) {
-        case 1: death_npc1 = 1;
-        case 2: death_npc2 = 1;
-        case 3: death_npc3 = 1;
-        case 4: death_npc4 = 1;
-        case 5: death_npc5 = 1;
-        case 6: death_npc6 = 1;
+        case 1: death_npc1 = 1; break;
+        case 2: death_npc2 = 1; break;
+        case 3: death_npc3 = 1; break;
+        case 4: death_npc4 = 1; break;
+        case 5: death_npc5 = 1; break;
+        case 6: death_npc6 = 1; break;
 
         }
     }
